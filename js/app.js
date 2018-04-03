@@ -10,6 +10,7 @@ for(let i = 0; i < 16; i++) {
     cardElement.classList.toggle("card");
     cardElement.children[0].classList.toggle("fa");
     cardElement.children[0].classList.toggle(classNames[i % 8]);
+    cardElement.addEventListener('click', respondToTheClick);
     cardList.push(cardElement);
 }
 
@@ -54,7 +55,6 @@ function createGame() {
     const endTime = performance.now();
     console.log(endTime-startTime);
 }
-createGame();
 /*
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
@@ -65,3 +65,85 @@ createGame();
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+
+ createGame();
+ openedCards = [];
+ function deckBusy() {
+    for(let i = 0; i < cardList.length; i++) {
+        cardList[i].classList.toggle("busy");
+    }
+ }
+
+ function cardToggle(target) {
+     target.classList.toggle("open");
+     target.classList.toggle("show");
+ }
+
+ function same(target) {
+    let listLength = openedCards.length;
+    for(let i = 0; i < 2; i++) {
+        targetCard = openedCards[listLength - 1 - i];
+        cardToggle(targetCard);
+        targetCard.classList.toggle("match");
+        targetCard.animate({
+            transform: ['scale(1, 1)', 'scale(1.05, 0.5)', 'scale(0.5, 1.05)', 'scale(1.05, 0.85)', 'scale(0.85, 1.05)', 'scale(1, 1)'],
+            easing: 'ease'
+        },
+        {duration: 500
+        })
+    }
+    setTimeout(function() {
+        deckBusy();
+    }, 500);
+ }
+
+ function different() {
+    let listLength = openedCards.length;
+    for(let i = 0; i < 2; i++) {
+        let targetCard = openedCards[listLength - 1 - i];
+        cardToggle(targetCard);
+        targetCard.classList.toggle("unmatch");
+        targetCard.animate({
+            transform: ['translate(0)', 'translate(10%)', 'translate(0)', 'translate(-10%)', 'translate(0)'],
+            easing: 'ease-out'
+        },
+        {duration: 500
+        });
+        setTimeout(function() {
+            let targetCard = openedCards.pop();
+            targetCard.classList.toggle("unmatch");
+        }, 500);
+    }
+    setTimeout(function() {
+        deckBusy();
+    }, 500);
+ }
+
+ function checkValidity(target) {
+    let listLength = openedCards.length;
+    if(listLength % 2 === 0) {
+         deckBusy();
+         let cardType = openedCards[listLength - 2].children[0].classList[1];
+         if(openedCards[listLength - 1].children[0].classList.contains(cardType)) {
+             same(target);
+        }
+         else {
+             different();
+        }
+     }
+     else {
+        target.animate({
+            transform: ['rotateY(180deg)', 'rotateY(0)'],
+            easing: 'ease'
+        },
+        {duration: 500
+        })
+     }
+ }
+ 
+ function respondToTheClick(e) {
+     let target = e.target;
+     cardToggle(target);
+     openedCards.push(target);
+     checkValidity(target);
+ }
