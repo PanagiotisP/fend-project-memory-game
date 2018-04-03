@@ -1,8 +1,17 @@
 /*
  * Create a list that holds all of your cards
  */
-let cardList = document.getElementsByClassName("card");
-cardList = [...cardList];
+const classNames = ["fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb"];
+let cardElementHtml = "<i></i>";
+let cardList = [];
+for(let i = 0; i < 16; i++) {
+    let cardElement = document.createElement("li");
+    cardElement.innerHTML = cardElementHtml;
+    cardElement.classList.toggle("card");
+    cardElement.children[0].classList.toggle("fa");
+    cardElement.children[0].classList.toggle(classNames[i % 8]);
+    cardList.push(cardElement);
+}
 
 /*
  * Display the cards on the page
@@ -26,6 +35,8 @@ function shuffle(array) {
     return array;
 }
 
+// Create HTML for each card
+
 function createGame() {
     const startTime = performance.now();
     shuffle(cardList);
@@ -43,6 +54,7 @@ function createGame() {
     const endTime = performance.now();
     console.log(endTime-startTime);
 }
+createGame();
 /*
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
