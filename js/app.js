@@ -1,10 +1,18 @@
+let openedCards = [];
+let movesCounter = 0;
+let timer = 0;
+let start = false;
+let second = 0, minute = 0; hour = 0;
+let interval;
+timer = document.querySelector(".timer");
+
 /*
  * Create a list that holds all of your cards
  */
 const classNames = ["fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb"];
 let cardElementHtml = "<i></i>";
 let cardList = [];
-for(let i = 0; i < 16; i++) {
+for (let i = 0; i < 16; i++) {
     let cardElement = document.createElement("li");
     cardElement.innerHTML = cardElementHtml;
     cardElement.classList.toggle("card");
@@ -39,21 +47,20 @@ function shuffle(array) {
 // Create HTML for each card
 
 function createGame() {
-    const startTime = performance.now();
+    movesCounter = 0;
+    timer.textContent = "0 mins 0 secs";
     shuffle(cardList);
-    moves = 0;
+    printMoves();
     let deck = document.getElementsByClassName("deck")[0];
     let oldCardList = deck.children;
-    for(let i = 0; i < cardList.length; i++) {
+    for (let i = 0; i < cardList.length; i++) {
         oldCardList[0].remove();
     }
     const myDocFrag = document.createDocumentFragment();
-    for(let i = 0; i < cardList.length; i++) {
+    for (let i = 0; i < cardList.length; i++) {
         myDocFrag.appendChild(cardList[i]);
     }
     deck.appendChild(myDocFrag);
-    const endTime = performance.now();
-    console.log(endTime-startTime);
 }
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -66,22 +73,49 @@ function createGame() {
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
- createGame();
- openedCards = [];
- function deckBusy() {
-    for(let i = 0; i < cardList.length; i++) {
+createGame();
+function deckBusy() {
+    for (let i = 0; i < cardList.length; i++) {
         cardList[i].classList.toggle("busy");
     }
- }
+}
 
- function cardToggle(target) {
-     target.classList.toggle("open");
-     target.classList.toggle("show");
- }
+function cardReveal(target) {
+    target.animate({
+        transform: ['rotateY(180deg)', 'rotateY(0)'],
+        easing: 'ease'
+    },
+        {
+            duration: 500
+        })
+}
 
- function same(target) {
+function printMoves() {
+    document.querySelector(".moves").textContent = movesCounter.toString() + " Moves";
+}
+
+function checkValidity() {
     let listLength = openedCards.length;
-    for(let i = 0; i < 2; i++) {
+    movesCounter++;
+    printMoves();
+    deckBusy();
+    let cardType = openedCards[listLength - 2].children[0].classList[1];
+    if (openedCards[listLength - 1].children[0].classList.contains(cardType)) {
+        same();
+    }
+    else {
+        different();
+    }
+}
+
+function cardToggle(target) {
+    target.classList.toggle("open");
+    target.classList.toggle("show");
+}
+
+function same() {
+    let listLength = openedCards.length;
+    for (let i = 0; i < 2; i++) {
         targetCard = openedCards[listLength - 1 - i];
         cardToggle(targetCard);
         targetCard.classList.toggle("match");
@@ -89,17 +123,18 @@ function createGame() {
             transform: ['scale(1, 1)', 'scale(1.05, 0.5)', 'scale(0.5, 1.05)', 'scale(1.05, 0.85)', 'scale(0.85, 1.05)', 'scale(1, 1)'],
             easing: 'ease'
         },
-        {duration: 500
-        })
+            {
+                duration: 500
+            })
     }
-    setTimeout(function() {
+    setTimeout(function () {
         deckBusy();
     }, 500);
- }
+}
 
- function different() {
+function different() {
     let listLength = openedCards.length;
-    for(let i = 0; i < 2; i++) {
+    for (let i = 0; i < 2; i++) {
         let targetCard = openedCards[listLength - 1 - i];
         cardToggle(targetCard);
         targetCard.classList.toggle("unmatch");
@@ -107,43 +142,50 @@ function createGame() {
             transform: ['translate(0)', 'translate(10%)', 'translate(0)', 'translate(-10%)', 'translate(0)'],
             easing: 'ease-out'
         },
-        {duration: 500
-        });
-        setTimeout(function() {
+            {
+                duration: 500
+            });
+        setTimeout(function () {
             let targetCard = openedCards.pop();
             targetCard.classList.toggle("unmatch");
         }, 500);
     }
-    setTimeout(function() {
+    setTimeout(function () {
         deckBusy();
     }, 500);
- }
+}
 
- function checkValidity(target) {
-    let listLength = openedCards.length;
-    if(listLength % 2 === 0) {
-         deckBusy();
-         let cardType = openedCards[listLength - 2].children[0].classList[1];
-         if(openedCards[listLength - 1].children[0].classList.contains(cardType)) {
-             same(target);
+function checkMove(target) {
+    if (openedCards.length % 2 === 0) {
+        checkValidity();
+    }
+    else {
+        cardReveal(target);
+    }
+}
+
+function respondToTheClick(e) {
+    if(!start) {
+        startTimer();
+        start = true;
+    }
+    let target = e.target;
+    cardToggle(target);
+    openedCards.push(target);
+    checkMove(target);
+}
+
+function startTimer() {
+    interval = setInterval(function(){
+        timer.textContent = minute+" mins "+second+" secs";
+        second++;
+        if(second == 60){
+            minute++;
+            second=0;
         }
-         else {
-             different();
+        if(minute == 60){
+            hour++;
+            minute = 0;
         }
-     }
-     else {
-        target.animate({
-            transform: ['rotateY(180deg)', 'rotateY(0)'],
-            easing: 'ease'
-        },
-        {duration: 500
-        })
-     }
- }
- 
- function respondToTheClick(e) {
-     let target = e.target;
-     cardToggle(target);
-     openedCards.push(target);
-     checkValidity(target);
- }
+    },1000);
+}
