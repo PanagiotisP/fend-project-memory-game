@@ -5,6 +5,8 @@ let start = false;
 let second = 0, minute = 0; hour = 0;
 let interval;
 timer = document.querySelector(".timer");
+let restartButton = document.querySelector(".restart");
+restartButton.addEventListener('click', gameReset);
 
 /*
  * Create a list that holds all of your cards
@@ -52,10 +54,6 @@ function createGame() {
     shuffle(cardList);
     printMoves();
     let deck = document.getElementsByClassName("deck")[0];
-    let oldCardList = deck.children;
-    for (let i = 0; i < cardList.length; i++) {
-        oldCardList[0].remove();
-    }
     const myDocFrag = document.createDocumentFragment();
     for (let i = 0; i < cardList.length; i++) {
         myDocFrag.appendChild(cardList[i]);
@@ -74,9 +72,40 @@ function createGame() {
  */
 
 createGame();
-function deckBusy() {
+
+function timeReset() {
+    clearInterval(interval);
+    second = 0, minute = 0; hour = 0;
+}
+
+function deckReset() {
     for (let i = 0; i < cardList.length; i++) {
-        cardList[i].classList.toggle("busy");
+        cardList[i].classList.remove("open");
+        cardList[i].classList.remove("match");
+        cardList[i].classList.remove("show");
+        cardList[i].classList.remove("busy");
+        cardList[i].classList.remove("unmatch");
+    }
+}
+
+function gameReset() {
+    start = false;
+    openedCards = [];
+    timeReset();
+    deckReset();
+    createGame();
+}
+
+function deckBusy(state) {
+    if (state === 0) {
+        for (let i = 0; i < cardList.length; i++) {
+            cardList[i].classList.remove("busy");
+        }
+    }
+    else {
+        for (let i = 0; i < cardList.length; i++) {
+            cardList[i].classList.add("busy");
+        }
     }
 }
 
@@ -88,6 +117,7 @@ function cardReveal(target) {
         {
             duration: 500
         })
+        target.classList.toggle("busy");
 }
 
 function printMoves() {
@@ -98,7 +128,7 @@ function checkValidity() {
     let listLength = openedCards.length;
     movesCounter++;
     printMoves();
-    deckBusy();
+    deckBusy(1);
     let cardType = openedCards[listLength - 2].children[0].classList[1];
     if (openedCards[listLength - 1].children[0].classList.contains(cardType)) {
         same();
@@ -128,7 +158,7 @@ function same() {
             })
     }
     setTimeout(function () {
-        deckBusy();
+        deckBusy(0);
     }, 500);
 }
 
@@ -151,7 +181,7 @@ function different() {
         }, 500);
     }
     setTimeout(function () {
-        deckBusy();
+        deckBusy(0);
     }, 500);
 }
 
@@ -164,6 +194,12 @@ function checkMove(target) {
     }
 }
 
+function checkWin() {
+    if(openedCards.length == 16) {
+
+    }
+}
+
 function respondToTheClick(e) {
     if(!start) {
         startTimer();
@@ -173,6 +209,7 @@ function respondToTheClick(e) {
     cardToggle(target);
     openedCards.push(target);
     checkMove(target);
+    checkWin();
 }
 
 function startTimer() {
