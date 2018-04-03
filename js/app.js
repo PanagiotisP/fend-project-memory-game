@@ -26,7 +26,23 @@ function shuffle(array) {
     return array;
 }
 
-
+function createGame() {
+    const startTime = performance.now();
+    shuffle(cardList);
+    moves = 0;
+    let deck = document.getElementsByClassName("deck")[0];
+    let oldCardList = deck.children;
+    for(let i = 0; i < cardList.length; i++) {
+        oldCardList[0].remove();
+    }
+    const myDocFrag = document.createDocumentFragment();
+    for(let i = 0; i < cardList.length; i++) {
+        myDocFrag.appendChild(cardList[i]);
+    }
+    deck.appendChild(myDocFrag);
+    const endTime = performance.now();
+    console.log(endTime-startTime);
+}
 /*
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
