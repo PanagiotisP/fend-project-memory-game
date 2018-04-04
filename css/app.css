@@ -125,3 +125,17 @@ h1 {
     text-align: center;
     width: 50%;
 }
+
+.congrat-box {
+    display: none;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+.congrat-box .congrat {
+    margin: 10% 0 0 0;
+    text-align: center;
+    background: #fff;
+}

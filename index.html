@@ -22,7 +22,7 @@
         		<li><i class="fa fa-star"></i></li>
         	</ul>
 
-        	<span class="moves">3</span>
+        	<span class="moves"></span>
 
             <div class="timer"></div>
 
@@ -33,6 +33,21 @@
 
         <ul class="deck">
         </ul>
+
+        <div class="congrat-box">
+            <div class="congrat">
+                <h2>Congratulations!!</h2>
+                <div class="text">
+                    <p>You completed the game with <span class="moves-number"></span> moves</p>
+                    <p>in <span class="time"></span></p>
+                    <p>Rating:  <span class="rating"></span></p>
+                </div>
+                <button class="repeat" onclick="gameReset()">
+                    <a>Repeat Game</a>
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script src="js/app.js"></script>

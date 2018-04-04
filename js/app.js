@@ -79,6 +79,7 @@ function gameReset() {
     openedCards = [];
     movesCounter = 0;
     wrongMovesCounter = 0;
+    document.querySelector(".congrat-box").setAttribute("style", "display: none");
     timeReset();
     deckReset();
     createGame();
@@ -113,7 +114,13 @@ function deckReset() {
     }
 }
 
-
+function congratulations() {
+    document.querySelector(".moves-number").textContent = movesCounter.toString();
+    clearInterval(interval);
+    document.querySelector(".time").textContent = timer.textContent;
+    document.querySelector(".rating").textContent = document.querySelector(".stars").childElementCount;
+    document.querySelector(".congrat-box").setAttribute("style", "display: inline");
+}
 
 function deckBusy(state) {
     if (state === 0) {
@@ -229,7 +236,8 @@ function checkMove(target) {
 
 function checkWin() {
     if(openedCards.length == 16) {
-
+        console.log("nikh");
+        congratulations();
     }
 }
 
