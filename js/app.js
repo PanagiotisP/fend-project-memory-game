@@ -1,5 +1,6 @@
 let openedCards = [];
 let movesCounter = 0;
+let wrongMovesCounter = 0
 let timer = 0;
 let start = false;
 let second = 0, minute = 0; hour = 0;
@@ -48,18 +49,7 @@ function shuffle(array) {
 
 // Create HTML for each card
 
-function createGame() {
-    movesCounter = 0;
-    timer.textContent = "0 mins 0 secs";
-    shuffle(cardList);
-    printMoves();
-    let deck = document.getElementsByClassName("deck")[0];
-    const myDocFrag = document.createDocumentFragment();
-    for (let i = 0; i < cardList.length; i++) {
-        myDocFrag.appendChild(cardList[i]);
-    }
-    deck.appendChild(myDocFrag);
-}
+
 /*
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
@@ -73,7 +63,42 @@ function createGame() {
 
 createGame();
 
+function createGame() {
+    shuffle(cardList);
+    printMoves();
+    let deck = document.getElementsByClassName("deck")[0];
+    const myDocFrag = document.createDocumentFragment();
+    for (let i = 0; i < cardList.length; i++) {
+        myDocFrag.appendChild(cardList[i]);
+    }
+    deck.appendChild(myDocFrag);
+}
+
+function gameReset() {
+    start = false;
+    openedCards = [];
+    movesCounter = 0;
+    wrongMovesCounter = 0;
+    timeReset();
+    deckReset();
+    createGame();
+    starsReset();
+}
+
+function starsReset() {
+    let starsDeck = document.querySelector(".stars");
+    let starElementHtml = "<i></i>";
+    while(starsDeck.childElementCount < 3) {
+        let starElement = document.createElement("li");
+        starElement.innerHTML = starElementHtml;
+        starElement.classList.toggle("fa");
+        starElement.classList.toggle("fa-star");
+        starsDeck.appendChild(starElement);
+    }
+}
+
 function timeReset() {
+    timer.textContent = "0 mins 0 secs";
     clearInterval(interval);
     second = 0, minute = 0; hour = 0;
 }
@@ -88,13 +113,7 @@ function deckReset() {
     }
 }
 
-function gameReset() {
-    start = false;
-    openedCards = [];
-    timeReset();
-    deckReset();
-    createGame();
-}
+
 
 function deckBusy(state) {
     if (state === 0) {
@@ -124,10 +143,22 @@ function printMoves() {
     document.querySelector(".moves").textContent = movesCounter.toString() + " Moves";
 }
 
+function checkStars() {
+    let starsDeck = document.querySelector(".stars");
+    switch(wrongMovesCounter) {
+        case 8 :
+        starsDeck.children[0].remove();
+        break;
+        case 11:
+        starsDeck.children[0].remove();
+        break;
+
+    }
+}
+
 function checkValidity() {
     let listLength = openedCards.length;
     movesCounter++;
-    printMoves();
     deckBusy(1);
     let cardType = openedCards[listLength - 2].children[0].classList[1];
     if (openedCards[listLength - 1].children[0].classList.contains(cardType)) {
@@ -135,6 +166,7 @@ function checkValidity() {
     }
     else {
         different();
+        checkStars();
     }
 }
 
@@ -164,6 +196,7 @@ function same() {
 
 function different() {
     let listLength = openedCards.length;
+    wrongMovesCounter++;
     for (let i = 0; i < 2; i++) {
         let targetCard = openedCards[listLength - 1 - i];
         cardToggle(targetCard);
@@ -210,6 +243,7 @@ function respondToTheClick(e) {
     openedCards.push(target);
     checkMove(target);
     checkWin();
+    printMoves();
 }
 
 function startTimer() {
