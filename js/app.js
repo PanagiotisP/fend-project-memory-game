@@ -61,7 +61,7 @@ function shuffle(array) {
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
-createGame();
+gameReset();
 
 function createGame() {
     shuffle(cardList);
@@ -96,6 +96,9 @@ function starsReset() {
         starElement.classList.toggle("fa-star");
         starsDeck.appendChild(starElement);
     }
+    if(document.querySelector(".rating").childElementCount === 2) {
+        document.querySelector(".rating").children[1].remove();
+    }
 }
 
 function timeReset() {
@@ -115,11 +118,19 @@ function deckReset() {
 }
 
 function congratulations() {
+    let congratBox = document.querySelector(".congrat-box");
     document.querySelector(".moves-number").textContent = movesCounter.toString();
     clearInterval(interval);
     document.querySelector(".time").textContent = timer.textContent;
-    document.querySelector(".rating").textContent = document.querySelector(".stars").childElementCount;
-    document.querySelector(".congrat-box").setAttribute("style", "display: inline");
+    document.querySelector(".rating").appendChild(document.querySelector(".stars").cloneNode(true));
+    congratBox.setAttribute("style", "display: inline");
+    congratBox.animate({
+        opacity: [0, 1]
+    },
+    {
+        duration: 500
+    });
+
 }
 
 function deckBusy(state) {
@@ -194,7 +205,7 @@ function same() {
         },
             {
                 duration: 500
-            })
+            });
     }
     setTimeout(function () {
         deckBusy(0);
