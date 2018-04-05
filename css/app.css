@@ -28,6 +28,11 @@ body {
     flex-direction: column;
 }
 
+header {
+    width: 100%;
+    text-align: center;
+}
+
 h1 {
     font-weight: 300;
 }
@@ -94,11 +99,12 @@ h1 {
  */
 
 .score-panel {
-    text-align: left;
-    width: 345px;
-    margin-bottom: 10px;
+    text-align: center;
+    width: 660px;
+    margin-bottom: auto;
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-evenly;
 }
 
 .score-panel .stars {
@@ -119,7 +125,7 @@ h1 {
 
 .score-panel .timer {
     text-align: center;
-    width: 50%;
+    padding: 0 10px 0 10px;
 }
 
 /*
@@ -172,4 +178,28 @@ h1 {
     text-align: center;
     display: inline-block;
     font-size: 16px;
+}
+
+
+/*
+* Responsiveness
+*/
+
+@media screen and (max-width: 768px) {
+    .deck .card {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 2px;
+    }
+
+    .deck {
+        margin: auto;
+        width: 90%;
+    }
+
+    .score-panel {
+        width: 90%;
+        margin: auto;
+    }
 }
